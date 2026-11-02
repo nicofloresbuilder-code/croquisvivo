@@ -22,6 +22,7 @@ function parseTiempo(s: string): number | null | "mal" {
   return Number(m[1]) * 60 + Number(m[2]);
 }
 const hoy = () => new Date().toISOString().slice(0, 10);
+const en14dias = () => new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
 const TEXTO_MODO: Record<Modo, string> = {
   nube: "Guardado en la nube (solo tú ves tus casos)",
   local: "Guardado en este navegador",
@@ -339,7 +340,7 @@ function Acciones({ n, caso, der, actualizar, recalcular }: { n: string; caso: C
 
 function TarjetaAccion({ a, msg, onAsignar, onAplicar, onRevertir, onConfirmar }: { a: Accion; msg?: string; onAsignar: (r: string, f: string) => void; onAplicar: () => void; onRevertir: () => void; onConfirmar: (f: string, n: string, t: number | null) => void }) {
   const [resp, setResp] = useState(a.responsable);
-  const [fecha, setFecha] = useState(a.fecha || hoy());
+  const [fecha, setFecha] = useState(a.fecha || en14dias());
   const [rf, setRf] = useState(hoy());
   const [nota, setNota] = useState("");
   const [rt, setRt] = useState("");
@@ -352,7 +353,7 @@ function TarjetaAccion({ a, msg, onAsignar, onAplicar, onRevertir, onConfirmar }
       {(a.estado === "propuesta" || a.estado === "asignada") && (
         <div className="fila">
           <div><label htmlFor={`r${a.id}`}>Responsable</label><input id={`r${a.id}`} value={resp} onChange={(e) => setResp(e.target.value)} maxLength={60} placeholder="Nombre de la persona" /></div>
-          <div><label htmlFor={`f${a.id}`}>Fecha límite</label><input id={`f${a.id}`} type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} /></div>
+          <div><label htmlFor={`f${a.id}`}>Fecha límite (propuesta: en 14 días, cámbiala)</label><input id={`f${a.id}`} type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} /></div>
         </div>
       )}
       {a.estado !== "propuesta" && <p style={{ margin: "8px 0" }}>Responsable: <strong>{a.responsable}</strong> · fecha límite: <strong>{a.fecha}</strong></p>}
