@@ -33,7 +33,10 @@ export interface Derivado {
 export function nuevoId(): string {
   const c = globalThis.crypto;
   if (c?.randomUUID) return c.randomUUID();
-  return "id-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (ch) => {
+    const r = (Math.random() * 16) | 0;
+    return (ch === "x" ? r : (r & 3) | 8).toString(16);
+  });
 }
 
 export function afirmacionPorDefecto(sitio: SitioId): Afirmacion {

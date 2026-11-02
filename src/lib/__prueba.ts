@@ -57,7 +57,7 @@ t("tras corregir: menos personas sin oír con margen claro", c3.sinOirSeguro < c
 t("aplicarFix con id inexistente devuelve false", aplicarFix(PRESETS.hospital(), "altavoz:Zona que no existe") === false);
 
 // máquina de estados de acciones
-let ac0: Accion = { ...caso.acciones[0] };
+const ac0: Accion = { ...caso.acciones[0] };
 t("no se aplica sin responsable", !aplicarAlModelo(ac0).ok);
 t("asignar exige nombre", !asignar(ac0, " ", "2026-11-20").ok);
 t("asignar exige fecha válida", !asignar(ac0, "Ana", "2026-02-31").ok && !asignar(ac0, "Ana", "mañana").ok);
