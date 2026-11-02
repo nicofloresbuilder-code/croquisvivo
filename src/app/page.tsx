@@ -8,7 +8,7 @@ export default function Inicio() {
           <p className="etiqueta">Simulacros de evacuación · México</p>
           <h1>Tu simulacro dijo que todos salieron. <em>¿Lo comprobamos?</em></h1>
           <p className="grande">
-            Croquis Vivo compara lo que dice el registro de un simulacro contra una simulación de tu croquis. Marca solo las brechas que superan el error normal del modelo y le pone nombre y fecha a cada corrección.
+            Croquis Vivo compara lo que dice el registro de un simulacro contra una simulación de tu croquis. Marca solo las brechas que superan el error normal del modelo (el rango donde cae el 80 % de las simulaciones) y le pone nombre y fecha a cada corrección.
           </p>
           <div className="acciones">
             <Link href="/herramienta" className="btn">Abrir la herramienta</Link>

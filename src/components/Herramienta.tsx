@@ -120,6 +120,7 @@ export default function Herramienta() {
             <input id="nombre" value={nombre} maxLength={80} placeholder="Ej. Simulacro de septiembre" onChange={(e) => setNombre(e.target.value)} />
           </div>
         </div>
+        <p className="chico">En esta versión solo hay dos croquis de ejemplo inventados. Cargar el plano de tu propio edificio es el siguiente paso por construir; hoy la herramienta enseña cómo se haría la comparación.</p>
         <div className="acciones"><button type="button" className="btn" onClick={nuevo} disabled={calc}>Crear caso</button></div>
         {cargando ? <p className="chico">Cargando casos guardados…</p> : casos.length > 0 && (
           <div style={{ marginTop: 18 }}>
