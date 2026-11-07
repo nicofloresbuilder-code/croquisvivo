@@ -5,7 +5,7 @@
  * (Condición 6 del Blueprint: conservar resultados negativos y disensos).
  */
 import { clienteNube, iniciar } from "./almacen";
-import type { Sesion } from "./sesion/validar";
+import { fusionar, type Sesion } from "./sesion/validar";
 
 const CLAVE = "croquisvivo.sesiones.v1";
 let memoria: Sesion[] = [];
@@ -38,7 +38,7 @@ function deFila(f: Fila): Sesion {
   };
 }
 
-export async function listarSesiones(): Promise<{ sesiones: Sesion[]; donde: "nube" | "local" }> {
+export async function listarSesiones(): Promise<{ sesiones: Sesion[]; donde: "nube" | "local"; soloAqui: number }> {
   await iniciar();
   const local = leerLocal();
   const c = await clienteNube();
@@ -46,12 +46,19 @@ export async function listarSesiones(): Promise<{ sesiones: Sesion[]; donde: "nu
     try {
       const { data, error } = await c.from("sesiones").select("*").order("creada", { ascending: true }).limit(200);
       if (error) throw error;
-      const nube = (data ?? []).map((f) => deFila(f as Fila));
-      const ids = new Set(nube.map((s) => s.id));
-      return { sesiones: [...nube, ...local.filter((s) => !ids.has(s.id))].sort((a, b) => a.creada - b.creada), donde: "nube" };
+      const { sesiones, pendientes } = fusionar((data ?? []).map((f) => deFila(f as Fila)), local);
+      // Reintenta subir lo que solo estaba en este navegador; lo que siga sin subir se avisa en pantalla.
+      let soloAqui = 0;
+      for (const s of pendientes) {
+        try {
+          const r = await c.from("sesiones").upsert(aFila(s), { onConflict: "id" });
+          if (r.error) throw r.error;
+        } catch { soloAqui++; }
+      }
+      return { sesiones, donde: "nube", soloAqui };
     } catch { /* cae a local */ }
   }
-  return { sesiones: local.sort((a, b) => a.creada - b.creada), donde: "local" };
+  return { sesiones: local.sort((a, b) => a.creada - b.creada), donde: "local", soloAqui: local.length };
 }
 
 export async function guardarSesion(s: Sesion): Promise<"nube" | "local"> {

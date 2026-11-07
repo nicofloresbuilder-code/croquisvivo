@@ -1,5 +1,5 @@
 /** Pruebas de la libreta de sesiones. Correr: npx tsx src/lib/__prueba13.ts */
-import { aCsv, comparacionConHoja, datoPersonal, fmtMmSs, pagaHoyResumen, parseMmSs, rankingDolores, reglaDeLaSemana, validarSesion, volverian, type Sesion } from "./sesion/validar";
+import { aCsv, fusionar, comparacionConHoja, datoPersonal, fmtMmSs, pagaHoyResumen, parseMmSs, rankingDolores, reglaDeLaSemana, validarSesion, volverian, type Sesion } from "./sesion/validar";
 
 let ok = 0, mal = 0;
 function t(nombre: string, cond: boolean, extra?: unknown) {
@@ -78,6 +78,14 @@ t("volverían sin prueba no cuenta como prueba", (() => { const r = volverian([m
 const csv = aCsv([mk({ pagaHoy: "=HYPERLINK(\"x\")", problemaPrincipal: "dice \"hola\"" })]);
 t("csv protege fórmulas", csv.includes("\"'=HYPERLINK"), csv);
 t("csv escapa comillas", csv.includes('"dice ""hola"""'), csv);
+
+// fusión nube + local (error encontrado: lo que solo estaba en el navegador se mostraba como guardado en la nube)
+const sA = mk({}), sB = mk({ creada: sA.creada + 1000 }), sC = mk({ creada: sA.creada + 2000 });
+const f1 = fusionar([sA], [sA, sB, sC]);
+t("fusionar marca como pendientes las sesiones que solo están en el navegador", f1.pendientes.length === 2 && f1.pendientes.every((s) => s.id !== sA.id));
+t("fusionar no duplica las que ya están en la nube", f1.sesiones.length === 3 && new Set(f1.sesiones.map((s) => s.id)).size === 3);
+t("fusionar ordena por fecha", f1.sesiones[0].id === sA.id && f1.sesiones[2].id === sC.id);
+t("fusionar sin pendientes", fusionar([sA, sB], [sB]).pendientes.length === 0);
 
 console.log(`${ok} bien, ${mal} mal`);
 process.exit(mal ? 1 : 0);

@@ -334,7 +334,7 @@ function Acciones({ n, caso, der, actualizar, recalcular }: { n: string; caso: C
       {caso.acciones.length === 0 && <p>No hay correcciones propuestas para este croquis. Eso no prueba que no haya problemas.</p>}
       {caso.acciones.map((a) => <TarjetaAccion key={a.id} a={a} msg={msg[a.id]} onAsignar={(r, f) => { const x = asignar(a, r, f); if (x.ok) { err(a.id, ""); registrar("accion_asignada"); cambiar(x.valor); } else err(a.id, x.error); }} onAplicar={() => aplicar(a)} onRevertir={() => deshacer(a)} onConfirmar={(f, n, t) => { const x = confirmarReal(a, f, n, t); if (x.ok) { err(a.id, ""); registrar("accion_confirmada"); cambiar(x.valor, t != null ? { observado: { ...caso.observado, tiempoSeg: t } } : {}); } else err(a.id, x.error); }} />)}
       {pendientesHallazgo.length > 0 && (
-        <details style={{ marginTop: 14 }}>
+        <details open style={{ marginTop: 14 }}>
           <summary>Otros hallazgos del modelo, sin corrección automática ({pendientesHallazgo.length})</summary>
           {pendientesHallazgo.map((h) => <p key={h.title}><strong>{h.title}.</strong> {h.detail} <span className="clase simulado">simulado</span></p>)}
         </details>

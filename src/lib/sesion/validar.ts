@@ -214,3 +214,13 @@ export function aCsv(ss: Sesion[]): string {
   const filas = ss.map((s) => [s.id, new Date(s.creada).toISOString(), s.rol, s.desconocido, s.modalidad, s.completoSolo, s.segundos, s.errores, s.atascos.join(" | "), s.problemaPrincipal, s.gravedad, s.pagaHoy, s.quienFirma, s.segundosHoja ?? "", s.volveria, s.pruebaVolver].map(celda).join(","));
   return [cab.join(","), ...filas].join("\n");
 }
+
+/**
+ * Une las sesiones de la nube con las de este navegador. Las que solo están aquí se devuelven como
+ * "pendientes" para que se vuelvan a subir (antes se mostraban como guardadas en la nube sin estarlo).
+ */
+export function fusionar(nube: Sesion[], local: Sesion[]): { sesiones: Sesion[]; pendientes: Sesion[] } {
+  const ids = new Set(nube.map((s) => s.id));
+  const pendientes = local.filter((s) => !ids.has(s.id));
+  return { sesiones: [...nube, ...pendientes].sort((a, b) => a.creada - b.creada), pendientes };
+}

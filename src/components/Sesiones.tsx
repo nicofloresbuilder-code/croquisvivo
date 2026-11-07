@@ -23,6 +23,7 @@ function descargar(nombre: string, tipo: string, contenido: string) {
 export default function Sesiones() {
   const [sesiones, setSesiones] = useState<Sesion[]>([]);
   const [donde, setDonde] = useState<"nube" | "local">("local");
+  const [soloAqui, setSoloAqui] = useState(0);
   const [cargando, setCargando] = useState(true);
   const [activa, setActiva] = useState<SesionActiva | null>(null);
   const [cerrando, setCerrando] = useState(false);
@@ -32,6 +33,7 @@ export default function Sesiones() {
     const r = await listarSesiones();
     setSesiones(r.sesiones);
     setDonde(r.donde);
+    setSoloAqui(r.soloAqui);
   }, []);
 
   useEffect(() => {
@@ -72,7 +74,8 @@ export default function Sesiones() {
       <p className="etiqueta">Semana 13 · usuarios reales</p>
       <h1 style={{ margin: "0 0 6px", fontSize: "2.4rem" }}>Libreta del observador</h1>
       <p style={{ maxWidth: "68ch" }}>Aquí anoto cómo le va a una persona real con la herramienta: cuánto tarda, dónde se atora (con su cita exacta), qué paga hoy y quién firma ese gasto. <strong>No anotes nombres, correos ni teléfonos:</strong> describe a la persona solo por su rol.</p>
-      <p className="chico" role="status">{cargando ? "Cargando…" : donde === "nube" ? "Guardado en la nube y también en este navegador." : "Guardado en este navegador. Exporta el archivo cuando termines para no perderlo."}</p>
+      <p className="chico"><strong>¿Estás probando la herramienta?</strong> Esta página es para quien observa la prueba. Ve a <Link href="/herramienta">la herramienta</Link>.</p>
+      <p className="chico" role="status">{cargando ? "Cargando…" : donde === "nube" ? (soloAqui > 0 ? `Guardado en la nube, pero ${soloAqui} sesión(es) solo están en este navegador. Exporta el archivo para no perderlas.` : "Guardado en la nube y también en este navegador.") : "Guardado solo en este navegador. Exporta el archivo cuando termines para no perderlo."}</p>
 
       <div className="panel salida">
         <p className="etiqueta">Regla de la semana</p>
@@ -222,7 +225,7 @@ function FormularioSesion({ activa, alGuardar, alDescartar }: { activa: SesionAc
       <div className="fila">
         <div><label htmlFor="s-sola">¿Completó la tarea sin ayuda?</label><select id="s-sola" value={solo} onChange={(e) => setSolo(e.target.value as Si)}><option value="">Elige…</option><option value="si">Sí</option><option value="no">No</option></select></div>
         <div><label htmlFor="s-t">Tiempo total (mm:ss)</label><input id="s-t" value={tiempo} onChange={(e) => setTiempo(e.target.value)} maxLength={6} /></div>
-        <div><label htmlFor="s-e">Errores que cometió</label><input id="s-e" inputMode="numeric" value={errores} onChange={(e) => setErrores(e.target.value)} maxLength={3} /></div>
+        <div><label htmlFor="s-e">Errores de captura (ej. un tiempo mal escrito)</label><input id="s-e" inputMode="numeric" value={errores} onChange={(e) => setErrores(e.target.value)} maxLength={3} /></div>
       </div>
       <label htmlFor="s-a">Dónde se atoró, con su cita exacta (una por línea, máximo {MAX_ATASCOS})</label>
       <textarea id="s-a" value={atascos} onChange={(e) => setAtascos(e.target.value)} placeholder={'"No entiendo qué es una corrida"'} />
