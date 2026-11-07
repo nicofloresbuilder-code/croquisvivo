@@ -66,6 +66,11 @@ export function iniciar(): Promise<Modo> {
   return listo;
 }
 export function modoActual(): Modo { return modo; }
+/** Cliente de la base de datos, solo si ya hay sesión anónima activa (modo nube). Si no, null. */
+export async function clienteNube(): Promise<SupabaseClient | null> {
+  await iniciar();
+  return modo === "nube" ? cliente : null;
+}
 
 export async function listar(): Promise<Caso[]> {
   await iniciar();
