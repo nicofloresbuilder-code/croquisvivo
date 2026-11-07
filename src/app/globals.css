@@ -116,3 +116,11 @@ details > summary { cursor: pointer; font-weight: 700; min-height: 36px; display
 .pasos li { counter-increment: p; padding: 10px 0 10px 54px; position: relative; border-bottom: 1px solid var(--linea); }
 .pasos li::before { content: counter(p); position: absolute; left: 0; top: 8px; width: 38px; height: 38px; border-radius: 50%; background: var(--salida); color: #04170d; font-family: var(--titulos); font-weight: 800; display: grid; place-items: center; font-size: 1.1rem; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+
+/* semana 13: botón y panel "Se me atoró aquí" */
+.atasco { position: fixed; right: 14px; bottom: 14px; z-index: 30; max-width: min(360px, calc(100vw - 28px)); }
+.atasco .panel { margin: 0; box-shadow: 0 8px 28px rgba(0,0,0,.55); }
+.atasco > .btn { box-shadow: 0 6px 20px rgba(0,0,0,.5); }
+.tabla-ses td, .tabla-ses th { white-space: normal; }
+.ranking-n { font-family: var(--titulos); font-stretch: condensed; font-weight: 800; font-size: 1.6rem; color: var(--salida); }
+.temporizador { font-family: var(--titulos); font-stretch: condensed; font-weight: 800; font-size: 2.6rem; letter-spacing: .04em; }

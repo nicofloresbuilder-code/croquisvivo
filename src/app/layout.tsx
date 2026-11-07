@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cabecera, Pie } from "@/components/Cabecera";
+import { Pista } from "@/components/Pista";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es-MX">
       <body>
         <a href="#contenido" className="oculto-lector">Saltar al contenido</a>
+        <Pista />
         <Cabecera />
         <main id="contenido">{children}</main>
         <Pie />

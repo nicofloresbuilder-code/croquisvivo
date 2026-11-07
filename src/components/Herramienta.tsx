@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { asignar, aplicarAlModelo, confirmarReal, ETIQUETA_ESTADO, revertir } from "@/lib/motor/acciones";
 import type { Accion } from "@/lib/motor/acciones";
 import { borrar, guardar, iniciar, listar } from "@/lib/almacen";
+import { registrar } from "@/lib/eventos";
 import type { Modo } from "@/lib/almacen";
 import { crearCaso, derivar, limpiarAfirmacion, sincronizarAcciones } from "@/lib/motor/caso";
 import type { Caso, Derivado } from "@/lib/motor/caso";
@@ -75,6 +76,7 @@ export default function Herramienta() {
       const c2 = sincronizarAcciones(c, d.hallazgos);
       if (c2 !== c) { setCaso(c2); void persistir({ ...c2, actualizado: Date.now() }); }
       if (inicio.current && segundos === null) setSegundos(Math.round((performance.now() - inicio.current) / 1000));
+      registrar("comparado", { sitio: c2.sitio, brechas: d.hallazgos.length });
       setCalc(false);
     }, 30);
   }, [persistir, segundos]);
@@ -89,6 +91,7 @@ export default function Herramienta() {
   }
   function nuevo() {
     const c = crearCaso(sitio, nombre, Date.now());
+    registrar("caso_creado", { sitio });
     void persistir(c);
     abrir(c);
     setNombre("");
@@ -172,9 +175,9 @@ function Registro({ caso, ocupado, alGuardar }: { caso: Caso; ocupado: boolean; 
   function enviar(e: React.FormEvent) {
     e.preventDefault();
     const t = parseTiempo(tiempo);
-    if (t === "mal") { setError("Escribe el tiempo como minutos:segundos, por ejemplo 2:30, o déjalo vacío si el registro no lo dice."); return; }
+    if (t === "mal") { registrar("error_validacion", { campo: "tiempo_registro" }); setError("Escribe el tiempo como minutos:segundos, por ejemplo 2:30, o déjalo vacío si el registro no lo dice."); return; }
     const v = limpiarAfirmacion({ personas: Number(personas), evacuaron: Number(salieron), tiempoSeg: t, alarmaTodas: alarma });
-    if (!v.ok) { setError(v.error); return; }
+    if (!v.ok) { registrar("error_validacion", { campo: "registro" }); setError(v.error); return; }
     setError("");
     alGuardar(v.valor);
   }
@@ -284,11 +287,12 @@ function Observado({ caso, actualizar }: { caso: Caso; actualizar: (c: Caso) => 
   function guardarObs(e: React.FormEvent) {
     e.preventDefault();
     const tt = parseTiempo(t);
-    if (tt === "mal") { setError("Escribe el tiempo como mm:ss, por ejemplo 1:45."); return; }
+    if (tt === "mal") { registrar("error_validacion", { campo: "tiempo_observado" }); setError("Escribe el tiempo como mm:ss, por ejemplo 1:45."); return; }
     if (tt != null && (tt < 10 || tt > 3600)) { setError("El tiempo debe estar entre 10 s y 60 min."); return; }
     const d = db.trim() === "" ? null : Number(db);
     if (d != null && (!Number.isFinite(d) || d < 30 || d > 140)) { setError("El nivel de sonido debe estar entre 30 y 140 dB."); return; }
     setError("");
+    registrar("calibrado");
     actualizar({ ...caso, observado: { tiempoSeg: tt, nivelAlarmaDb: d } });
   }
   return (
@@ -306,7 +310,7 @@ function Observado({ caso, actualizar }: { caso: Caso; actualizar: (c: Caso) => 
 
 function Acciones({ n, caso, der, actualizar, recalcular }: { n: string; caso: Caso; der: Derivado; actualizar: (c: Caso) => Caso; recalcular: (c: Caso) => void }) {
   const [msg, setMsg] = useState<Record<string, string>>({});
-  const err = (id: string, m: string) => setMsg((p) => ({ ...p, [id]: m }));
+  const err = (id: string, m: string) => { if (m) registrar("error_validacion", { campo: "accion" }); setMsg((p) => ({ ...p, [id]: m })); };
   const cambiar = (a: Accion, extra: Partial<Caso> = {}) => actualizar({ ...caso, ...extra, acciones: caso.acciones.map((x) => (x.id === a.id ? a : x)) });
   const pendientesHallazgo = der.hallazgos.filter((h) => !h.fix);
 
@@ -314,6 +318,7 @@ function Acciones({ n, caso, der, actualizar, recalcular }: { n: string; caso: C
     const r = aplicarAlModelo(a);
     if (!r.ok) { err(a.id, r.error); return; }
     err(a.id, "");
+    registrar("accion_aplicada");
     const antes = caso.antes ?? der.resumen;
     const n = actualizar({ ...caso, antes, aplicadas: [...caso.aplicadas, a.fixId], acciones: caso.acciones.map((x) => (x.id === a.id ? r.valor : x)) });
     recalcular(n);
@@ -327,7 +332,7 @@ function Acciones({ n, caso, der, actualizar, recalcular }: { n: string; caso: C
   return (
     <Seccion n={n} titulo="Acciones con responsable">
       {caso.acciones.length === 0 && <p>No hay correcciones propuestas para este croquis. Eso no prueba que no haya problemas.</p>}
-      {caso.acciones.map((a) => <TarjetaAccion key={a.id} a={a} msg={msg[a.id]} onAsignar={(r, f) => { const x = asignar(a, r, f); if (x.ok) { err(a.id, ""); cambiar(x.valor); } else err(a.id, x.error); }} onAplicar={() => aplicar(a)} onRevertir={() => deshacer(a)} onConfirmar={(f, n, t) => { const x = confirmarReal(a, f, n, t); if (x.ok) { err(a.id, ""); cambiar(x.valor, t != null ? { observado: { ...caso.observado, tiempoSeg: t } } : {}); } else err(a.id, x.error); }} />)}
+      {caso.acciones.map((a) => <TarjetaAccion key={a.id} a={a} msg={msg[a.id]} onAsignar={(r, f) => { const x = asignar(a, r, f); if (x.ok) { err(a.id, ""); registrar("accion_asignada"); cambiar(x.valor); } else err(a.id, x.error); }} onAplicar={() => aplicar(a)} onRevertir={() => deshacer(a)} onConfirmar={(f, n, t) => { const x = confirmarReal(a, f, n, t); if (x.ok) { err(a.id, ""); registrar("accion_confirmada"); cambiar(x.valor, t != null ? { observado: { ...caso.observado, tiempoSeg: t } } : {}); } else err(a.id, x.error); }} />)}
       {pendientesHallazgo.length > 0 && (
         <details style={{ marginTop: 14 }}>
           <summary>Otros hallazgos del modelo, sin corrección automática ({pendientesHallazgo.length})</summary>

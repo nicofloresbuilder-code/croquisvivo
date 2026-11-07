@@ -28,7 +28,7 @@ export function Pie() {
           Croquis Vivo es un prototipo de proyecto de clase. <strong>No es una certificación</strong> ni sustituye la validación de Protección Civil. Todo lo que sale de la simulación está marcado como <em>simulado</em>; ningún resultado simulado se presenta como verificado en la realidad. Los croquis y las personas de la demostración son inventados.
         </p>
         <p>
-          <Link href="/condiciones">Cómo cuida el producto sus propias reglas</Link> · Los datos de los casos se guardan sin datos personales.
+          <Link href="/condiciones">Cómo cuida el producto sus propias reglas</Link> · <Link href="/sesiones">Libreta del observador</Link> · Los datos de los casos se guardan sin datos personales.
         </p>
       </div>
     </footer>

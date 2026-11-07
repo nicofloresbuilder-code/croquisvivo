@@ -1,4 +1,5 @@
 "use client";
+import { registrar } from "@/lib/eventos";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DOOR, EXIT, FURN, NOISE, OBST, SNR_MIN, SPK, STAIR, WALL, WIN, fmt, rectsOf } from "@/lib/motor/nucleo";
 import type { RunResult, Site } from "@/lib/motor/nucleo";
@@ -82,7 +83,7 @@ export function Plano({ site, run }: { site: Site; run: RunResult }) {
     <div>
       <canvas ref={cv} className="lienzo" width={site.cols * PX} height={site.rows * PX} role="img" aria-label={`Plano de ${site.name} con la simulación del desalojo. Tiempo ${fmt(f.t)}, ${f.out} de ${run.agents.length} personas afuera.`} />
       <div className="acciones" style={{ alignItems: "center" }}>
-        <button type="button" className="btn chico" onClick={() => { if (i >= n - 1) setI(0); setJugando((j) => !j); }}>{jugando ? "Pausa" : i >= n - 1 ? "Repetir" : "Reproducir"}</button>
+        <button type="button" className="btn chico" onClick={() => { if (i >= n - 1) setI(0); if (!jugando) registrar("plano_reproducido"); setJugando((j) => !j); }}>{jugando ? "Pausa" : i >= n - 1 ? "Repetir" : "Reproducir"}</button>
         <input type="range" min={0} max={n - 1} value={Math.min(i, n - 1)} onChange={(e) => { setJugando(false); setI(Number(e.target.value)); }} aria-label="Tiempo del simulacro simulado" style={{ flex: 1, minWidth: 140, minHeight: 0, padding: 0 }} />
         <span className="num chico" style={{ minWidth: 150 }}>{fmt(f.t)} · {f.out}/{run.agents.length} afuera</span>
       </div>
