@@ -4,11 +4,12 @@ Compara lo que se afirma de un plano de evacuación (personas, tiempo, alarma) c
 
 - Sitio: https://croquisvivo.vercel.app
 - Herramienta: /herramienta · Producto: /product · Por qué existe: /about · Condiciones: /condiciones
+- Libreta del observador (semana 13): /sesiones
 - Docs: docs/CHARTER.md, docs/PERSONAS.md, docs/PACKET.md, DECISIONS.md
 
 ## Correr local
 npm install && npm run dev
-Pruebas del motor: npx tsx src/lib/__prueba.ts
+Pruebas del motor: npx tsx src/lib/__prueba.ts · Pruebas de la libreta: npx tsx src/lib/__prueba13.ts · Recorrido: python3 scripts/mec13.py <url>
 
 ## Datos
-Sin variables, guarda en el navegador. Con NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY guarda en Supabase (migración en supabase/migrations, RLS por usuario anónimo). No hay datos personales reales; no hay secretos en el repo.
+Sin variables, guarda en el navegador (casos, eventos y sesiones). Con NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY guarda en Supabase (migración en supabase/migrations, RLS por usuario anónimo). No hay datos personales reales; no hay secretos en el repo.
