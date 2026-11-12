@@ -69,7 +69,7 @@ export default function Simulador() {
   return (
     <div id="simulador">
       <h2>Simulador de ingresos</h2>
-      <p className="chico" style={{ maxWidth: "70ch" }}>Escribe tus supuestos y mira el ingreso. No hay datos reales aquí: todo lo que sale depende de lo que escribas. Los campos de costo que dejes vacíos dicen <em>por medir</em>, no cero.</p>
+      <p className="chico" style={{ maxWidth: "70ch" }}>Esta calculadora es para probar supuestos de negocio (de quien construye o evalúa Croquis Vivo), no es una cotización para tu inmueble: tu precio es el del plan de arriba. No hay datos reales aquí: todo lo que sale depende de lo que escribas. Los campos de costo que dejes vacíos dicen <em>por medir</em>, no cero.</p>
       <div className="panel">
         <div className="fila">
           <div><label htmlFor="sim-seg">Segmento</label>
@@ -82,7 +82,7 @@ export default function Simulador() {
         </div>
         <div className="fila">
           <div><label htmlFor="sim-ent">Costo de entrega por inmueble al año <span className="chico">(vacío = sin medir)</span></label><input id="sim-ent" inputMode="numeric" value={entrega} onChange={(e) => setEntrega(e.target.value)} maxLength={9} placeholder="sin medir" /></div>
-          <div><label htmlFor="sim-act">Lo que gasta hoy el inmueble al año <span className="chico">(vacío = sin dato)</span></label><input id="sim-act" inputMode="numeric" value={actual} onChange={(e) => setActual(e.target.value)} maxLength={10} placeholder="sin dato" /></div>
+          <div><label htmlFor="sim-act">Lo que gasta hoy el inmueble al año, contando dinero, horas de su gente y multas posibles <span className="chico">(vacío = sin dato)</span></label><input id="sim-act" inputMode="numeric" value={actual} onChange={(e) => setActual(e.target.value)} maxLength={10} placeholder="sin dato" /></div>
           <div><label htmlFor="sim-fij">Costo fijo mensual (MXN)</label><input id="sim-fij" inputMode="numeric" value={fijo} onChange={(e) => setFijo(e.target.value)} maxLength={9} /></div>
         </div>
         {!v.ok && <div className="error" role="alert" id="sim-errores"><ul style={{ margin: 0 }}>{v.errores.filter((x) => !x.startsWith("Nombre")).map((x) => <li key={x}>{x}</li>)}</ul></div>}
@@ -96,8 +96,8 @@ export default function Simulador() {
             <div className="dato"><div className="v num">{mxn(salida.ingresoMensual)}</div><div className="e">ingreso mensual, promedio</div></div>
             <div className="dato"><div className="v num">{salida.margenAnual == null ? "por medir" : mxn(salida.margenAnual)}</div><div className="e">margen anual{salida.margenAnual == null ? ": falta el costo de entrega" : ""}</div></div>
           </div>
-          <p style={{ marginBottom: 4 }}><strong>Equilibrio:</strong> {salida.equilibrioPagantes == null ? "por medir (falta el costo de entrega, o cada pagante cuesta más de lo que paga)." : `${salida.equilibrioPagantes.toLocaleString("es-MX")} pagantes para cubrir los costos fijos.`}</p>
-          <p style={{ marginBottom: 4 }}><strong>10:1 con tus datos:</strong> {salida.razon == null ? `por medir. Para que se cumpla, el inmueble tendría que gastar hoy al menos ${mxn(salida.costoActualNecesario)} al año (${OBJETIVO_RAZON} veces el precio).` : `${salida.razon.toLocaleString("es-MX")} a 1 (${salida.cumpleRazon ? "cumple" : "no cumple"} el objetivo de ${OBJETIVO_RAZON} a 1). Es la razón de TUS números, no una medida.`}</p>
+          <p style={{ marginBottom: 4 }}><strong>Punto de equilibrio</strong> (cuántos inmuebles tienen que pagar para cubrir los costos fijos): {salida.equilibrioPagantes == null ? "por medir (falta el costo de entrega, o cada pagante cuesta más de lo que paga)." : `${salida.equilibrioPagantes.toLocaleString("es-MX")} pagantes.`}</p>
+          <p style={{ marginBottom: 4 }}><strong>10:1 con tus datos</strong> (lo que gasta hoy el inmueble entre el precio, objetivo: 10 o más):  {salida.razon == null ? `por medir. Para que se cumpla, el inmueble tendría que gastar hoy al menos ${mxn(salida.costoActualNecesario)} al año (${OBJETIVO_RAZON} veces el precio).` : `${salida.razon.toLocaleString("es-MX")} a 1 (${salida.cumpleRazon ? "cumple" : "no cumple"} el objetivo de ${OBJETIVO_RAZON} a 1). Es la razón de TUS números, no una medida.`}</p>
           <p className="chico">El ingreso mensual es un promedio: si la mayoría paga cerca del simulacro de septiembre, el flujo real no es parejo.</p>
         </div>
       )}
