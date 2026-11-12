@@ -9,7 +9,7 @@ Una herramienta sin precio es un pasatiempo con URL. La semana pasada la herrami
 Dos segmentos. **A:** escuelas privadas y edificios pequeños; firma el director o el dueño. **B:** hospitales, empresas y sitios con varios inmuebles; firma administración. Quien usa el simulador de ingresos soy yo (y el equipo) para jugar con los supuestos; quien ve /pricing es la persona que decide el gasto.
 
 ## 3. Definición de éxito
-Antes de que cierre el módulo, en croquisvivo.xyz: (1) /pricing muestra 2 segmentos y 3 planes con la línea entre gratis y de pago dibujada a propósito, cada precio etiquetado como hipótesis; (2) el simulador convierte inmuebles, conversión y precio en ingreso mensual y anual con los supuestos visibles; (3) puedo guardar escenarios con nombre y volver a verlos; (4) /about trae el memo 1:10 en una página; (5) hay un registro de conversaciones de precio que separa rechazos, interés dicho, propuestas pedidas, compromisos firmados y pagos, y solo los dos últimos cuentan como demanda.
+Antes de que cierre el módulo, en croquisvivo.xyz: (1) /pricing muestra 2 segmentos y 3 planes con la línea entre gratis y de pago dibujada a propósito, cada precio etiquetado como hipótesis; (2) el simulador convierte inmuebles, conversión y precio en ingreso mensual y anual con los supuestos visibles; (3) puedo guardar escenarios con nombre y volver a verlos; (4) /about trae el memo 10:1 en una página; (5) hay un registro de conversaciones de precio que separa rechazos, interés dicho, propuestas pedidas, compromisos firmados y pagos, y solo los dos últimos cuentan como demanda.
 
 ## 4. Mockup
 ![Mockup de /pricing](mockup14.png)
@@ -69,7 +69,7 @@ Pagos reales (no hay cobro, ni tarjetas, ni facturas), cuentas con correo o Goog
 |---|---|---|
 | App | Next.js 16 (App Router), React 19, TypeScript | Es la misma base de la semana 13 |
 | Lógica de precios | `src/lib/precios/modelo.ts`, funciones puras con pruebas | Se prueba sin navegador |
-| Páginas | `/pricing` (planes y simulador), `/about` (memo 1:10) | Pedido del brief |
+| Páginas | `/pricing` (planes y simulador), `/about` (memo 10:1) | Pedido del brief |
 | Escenarios y conversaciones | Tablas `escenarios` y `conversaciones_precio` en Supabase con RLS | Cada persona ve solo sus filas; no hay datos personales |
 | Respaldo | localStorage | Si la nube falla, el escenario no se pierde y la página lo dice |
 | Despliegue | Vercel, repo de GitHub, croquisvivo.xyz | Regla del venture |
