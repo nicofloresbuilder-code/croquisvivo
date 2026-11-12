@@ -11,6 +11,7 @@ export function Cabecera() {
         </Link>
         <nav className="enlaces" aria-label="Principal">
           <Link href="/product">Producto</Link>
+          <Link href="/pricing">Precios</Link>
           <Link href="/about">Por qué existe</Link>
           <Link href="/condiciones">Condiciones</Link>
           <Link href="/herramienta" className="cta">Abrir la herramienta</Link>
