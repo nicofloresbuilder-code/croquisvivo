@@ -12,6 +12,15 @@ t("parseNumero vacío es null", parseNumero("") === null);
 t("parseNumero con letras es NaN", Number.isNaN(parseNumero("tres mil") as number));
 t("parseNumero negativo es NaN", Number.isNaN(parseNumero("-5") as number));
 
+// error real hallado al probar entradas: "2,5" (2.5 % en español) se leía como 25 %
+t("parseNumero 2,5 se rechaza (antes daba 25)", Number.isNaN(parseNumero("2,5") as number));
+t("parseNumero 1,5 se rechaza", Number.isNaN(parseNumero("1,5") as number));
+t("parseNumero 12,34 se rechaza", Number.isNaN(parseNumero("12,34") as number));
+t("parseNumero 1,000,000 vale un millón", parseNumero("1,000,000") === 1_000_000);
+t("parseNumero 3,000.50 vale 3000.5", parseNumero("3,000.50") === 3000.5);
+t("parseNumero 2.5 vale 2.5", parseNumero("2.5") === 2.5);
+t("parseNumero 3,00 se rechaza", Number.isNaN(parseNumero("3,00") as number));
+t("conversión 2,5 da error en el escenario", (() => { const r = validarEscenario({ nombre: "x", segmento: "A", alcanzados: 10, conversionPct: "2,5", precioAnual: 3000, costoFijoMensual: 0 }); return !r.ok; })());
 // proyección con cuentas hechas a mano
 const base = { alcanzados: 200, conversionPct: 5, precioAnual: 3000, costoEntregaAnual: null, costoActualAnual: null, costoFijoMensual: 0 };
 const a = proyectar(base);
@@ -64,6 +73,7 @@ t("rol inválido rechazado", !cv({ rol: "mago" }).ok);
 t("resultado inválido rechazado", !cv({ resultado: "tal vez" }).ok);
 t("precio 0 rechazado", !cv({ precioPreguntado: 0 }).ok);
 t("precio con comas se lee", (() => { const r = cv({ precioPreguntado: "9,000" }); return r.ok && r.valor.precioPreguntado === 9000; })());
+t("precio 2,5 en conversación se rechaza", !cv({ precioPreguntado: "2,5" }).ok);
 t("cita con teléfono rechazada", !cv({ cita: "llámame al 55 1234 5678" }).ok);
 t("cita vacía rechazada", !cv({ cita: "" }).ok);
 t("compromiso sin prueba rechazado", !cv({ resultado: "compromiso_firmado", siguientePaso: "ok" }).ok);

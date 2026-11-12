@@ -30,10 +30,13 @@ export interface Salida {
 
 /** Convierte lo que escribe una persona ("3,000", " 12 ", "") a número. "" da null; texto inválido da NaN. */
 export function parseNumero(s: string): number | null {
-  const t = limpiarTexto(s).replace(/[$\s]/g, "").replace(/,/g, "");
+  const t = limpiarTexto(s).replace(/[$\s]/g, "");
   if (t === "") return null;
-  if (!/^\d+(\.\d+)?$/.test(t)) return NaN;
-  return Number(t);
+  // La coma solo vale como separador de miles (3,000). "2,5" NO es 25: se rechaza para no multiplicar por 10 sin avisar.
+  if (t.includes(",") && !/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(t)) return NaN;
+  const limpio = t.replace(/,/g, "");
+  if (!/^\d+(\.\d+)?$/.test(limpio)) return NaN;
+  return Number(limpio);
 }
 
 export function proyectar(e: Pick<Escenario, "alcanzados" | "conversionPct" | "precioAnual" | "costoEntregaAnual" | "costoActualAnual" | "costoFijoMensual">): Salida {
@@ -70,7 +73,7 @@ function num(campo: string, v: unknown, min: number, max: number, errores: strin
     return null;
   }
   const n = typeof v === "number" ? v : parseNumero(String(v));
-  if (n === null || Number.isNaN(n) || !Number.isFinite(n)) { errores.push(`${campo}: escribe un número (sin letras).`); return null; }
+  if (n === null || Number.isNaN(n) || !Number.isFinite(n)) { errores.push(`${campo}: escribe un número (sin letras; para decimales usa punto, y la coma solo para miles).`); return null; }
   if (opts.entero && !Number.isInteger(n)) { errores.push(`${campo}: debe ser un número entero.`); return null; }
   if (n < min || n > max) { errores.push(`${campo}: debe estar entre ${min.toLocaleString("es-MX")} y ${max.toLocaleString("es-MX")}.`); return null; }
   return n;

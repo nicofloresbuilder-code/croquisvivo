@@ -4,6 +4,7 @@
  * No hay nombres, correos ni teléfonos: la persona se describe por rol.
  */
 import { datoPersonal, limpiarTexto, nuevoId, ROL_IDS } from "../sesion/validar";
+import { parseNumero } from "./modelo";
 
 export const RESULTADOS = [
   ["rechazo", "Dijo que no"],
@@ -41,7 +42,7 @@ export function validarConversacion(r: Raw, ahora = Date.now()): Resultado<Conve
   const tareaHoy = txt("Tarea de hoy (cómo lo hace hoy)", r.tareaHoy, MAX.tarea, errores);
   const quienFirma = txt("Quién firma el gasto", r.quienFirma, MAX.quien, errores);
   const costoActual = txt("Qué paga hoy", r.costoActual, MAX.costo, errores);
-  const precio = typeof r.precioPreguntado === "number" ? r.precioPreguntado : Number(String(r.precioPreguntado ?? "").replace(/[$,\s]/g, ""));
+  const precio = typeof r.precioPreguntado === "number" ? r.precioPreguntado : (parseNumero(String(r.precioPreguntado ?? "")) ?? NaN);
   if (!Number.isFinite(precio) || precio <= 0 || precio > MAX.precio) errores.push(`Precio que le dijiste: un número mayor que 0 y hasta ${MAX.precio.toLocaleString("es-MX")}.`);
   if (typeof r.resultado !== "string" || !RES_IDS.includes(r.resultado)) errores.push("Resultado: elige qué pasó.");
   const cita = txt("Lo que dijo, tal cual", r.cita, MAX.cita, errores);
