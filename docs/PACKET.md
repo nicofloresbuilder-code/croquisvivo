@@ -1,102 +1,94 @@
-# PACKET: Croquis Vivo, semana 13 (usuarios reales)
+# PACKET: Croquis Vivo, semana 14 (precios)
 
-*Individual · escrito antes del código de esta semana. Versión de la semana 12: `docs/PACKET_W12.md`. Blueprint de la semana 13 (equipo 5, borrador simulado pendiente de aprobación real): mis condiciones son la 3 (MONEY) y, por la regla de la semana, la 1 y la 6.*
+*Individual · escrito antes del código de esta semana. Packet de la semana 13: docs/PACKET_W13.md. Blueprint de la semana 14 (equipo de cuatro, borrador basado en documentos, pendiente de ratificación en vivo): mi declaración es hablar con quien decide en un inmueble sobre su flujo actual de simulacros y probar un precio anual etiquetado, sin vender nunca una certificación. Condiciones 1, 3 y 4.*
 
 ## 1. El problema, en mis palabras
-
-La herramienta de la semana 12 funciona, pero **que funcione no prueba que alguien la quiera ni que alguien la pague.** El Blueprint lo dice: el comportamiento del usuario y completar la tarea importan más que los comentarios positivos. Hoy no tengo ni una persona real que la haya usado. Esta semana el problema es de evidencia: poder **observar a cinco personas reales, medir qué hacen y dónde se atoran, y guardar lo que dicen que pagan hoy**, sin inventar nada.
+Una herramienta sin precio es un pasatiempo con URL. La semana pasada la herramienta aprendió a observar personas; esta semana necesita un número defendible: quién paga, cuánto, por qué unidad y cuál es la comparación honesta contra lo que se hace hoy. Mi debate de rol (ADVERSARY) dejó tres muertes posibles: casi nadie cumple el programa interno, quien usa no es quien firma el gasto y lo gratis que ya existe es el competidor. El precio tiene que sobrevivir a eso, y mientras no lo haya probado una persona real, se muestra como hipótesis.
 
 ## 2. El usuario exacto
-
-Las personas que van a probar: coordinadores de Protección Civil, directores de escuela o administradores de hospitales, empresas o inmuebles (mínimo 3 de 5 desconocidos para mí). El usuario nuevo de esta semana es **yo como observador**: necesito una libreta que no deje que me olvide qué pasó en cada sesión.
+Dos segmentos. **A:** escuelas privadas y edificios pequeños; firma el director o el dueño. **B:** hospitales, empresas y sitios con varios inmuebles; firma administración. Quien usa el simulador de ingresos soy yo (y el equipo) para jugar con los supuestos; quien ve /pricing es la persona que decide el gasto.
 
 ## 3. Definición de éxito
-
-> Antes de que cierre el módulo, puedo iniciar una sesión de observación, ver que la herramienta registra de forma anónima qué hizo la persona y cuánto tardó, anotar con una cita exacta dónde se atoró y qué paga hoy, ver el ranking de los tres peores problemas, y exportar todo a un archivo para el PDF. **Y el registro nunca presenta una opinión como evidencia de demanda.**
+Antes de que cierre el módulo, en croquisvivo.xyz: (1) /pricing muestra 2 segmentos y 3 planes con la línea entre gratis y de pago dibujada a propósito, cada precio etiquetado como hipótesis; (2) el simulador convierte inmuebles, conversión y precio en ingreso mensual y anual con los supuestos visibles; (3) puedo guardar escenarios con nombre y volver a verlos; (4) /about trae el memo 1:10 en una página; (5) hay un registro de conversaciones de precio que separa rechazos, interés dicho, propuestas pedidas, compromisos firmados y pagos, y solo los dos últimos cuentan como demanda.
 
 ## 4. Mockup
+![Mockup de /pricing](mockup14.png)
 
-![Mockup de la página de sesiones](mockup13.png)
-
-*Maqueta HTML estática hecha antes del código (no es una imagen generada por IA: no tengo generación de imágenes en este entorno). Muestra la libreta de sesiones: datos de la persona por rol, tiempo, atascos con cita exacta, "qué paga hoy" y "quién firma el gasto".*
+Maqueta HTML estática hecha antes del código (no es una imagen generada por IA: no tengo generación de imágenes en este entorno). Las cifras que se ven son de ejemplo.
 
 ## 5. El flujo (Mermaid)
 
-### 5.1 Una sesión de observación
-
+### 5.1 De una persona que ve el precio a un escenario guardado
 ```mermaid
 flowchart TD
-    A[Iniciar sesion en la pagina Sesiones] --> B[La persona usa la herramienta]
-    B --> C[La herramienta guarda eventos anonimos con hora]
-    B --> D{Se atoro?}
-    D -->|Si| E[Boton Se me atoro aqui con cita exacta]
-    D -->|No| F[Sigue con la tarea]
-    E --> F
-    F --> G[Terminar sesion]
-    G --> H[Anotar rol, tiempo, errores, que paga hoy y quien firma]
-    H --> I{Volveria?}
-    I -->|Si| J[Guardar prueba: mensaje, visita o registro]
-    I -->|No| K[Guardar el motivo]
-    J --> L[Ranking de los 3 peores problemas]
-    K --> L
-    L --> M[Arreglar el peor, redesplegar y volver a medir]
+  A[Persona abre /pricing] --> B{Segmento}
+  B -->|A: escuelas y edificios pequeños| C[Ve plan Inmueble con precio de prueba]
+  B -->|B: hospitales y empresas| D[Ve plan Institución con precio de prueba]
+  C --> E[Abre el simulador]
+  D --> E
+  E --> F[Escribe inmuebles, conversión, precio y costos]
+  F --> G{Datos válidos}
+  G -->|No| H[Mensaje con el campo y el límite]
+  H --> F
+  G -->|Sí| I[Ingreso mensual y anual con supuestos visibles]
+  I --> J{Dio costo actual y costo de entrega}
+  J -->|No| K[El 10 a 1 y el margen dicen por medir]
+  J -->|Sí| L[Razón con la etiqueta: con tus datos, no medida]
+  K --> M[Guardar escenario con nombre]
+  L --> M
+  M --> N[Se guarda en el navegador y en la nube si hay]
 ```
 
 ### 5.2 Quién hace qué
-
 ```mermaid
 sequenceDiagram
-    participant O as Observador
-    participant U as Persona real
-    participant P as Croquis Vivo
-    participant B as Base de datos
-    O->>P: Inicia sesion de observacion
-    U->>P: Usa la herramienta con su propio caso
-    P->>B: Eventos anonimos con hora (sin nombres)
-    U-->>O: Dice donde se atora
-    O->>P: Guarda la cita exacta y los datos de dinero
-    P->>B: Sesion con rol, tiempo, errores, paga hoy
-    P-->>O: Ranking de pains y exportacion
+  participant P as Persona que decide
+  participant S as Sitio
+  participant O as Observador (yo)
+  participant D as Base de datos
+  P->>S: Ve el plan y su precio de prueba
+  S-->>P: Muestra que los hallazgos de seguridad no se cobran
+  O->>P: Pregunta si pagaría ese precio y quién firma
+  O->>S: Registra el resultado exacto en la libreta
+  S->>D: Guarda la conversación con su RLS
+  D-->>S: Cuenta rechazos e interés aparte de compromisos
+  S-->>O: Demanda comprobada = compromisos firmados y pagos
 ```
 
 ## 6. La línea de comparación global
-
-**Lo mejor que existe en la Tierra para esto es** el método de prueba de usabilidad con pocos usuarios de Nielsen Norman Group (observar a cinco personas, ranquear los problemas y arreglar los peores), aplicado en producto con herramientas de registro de sesiones como las que usa cualquier equipo de producto. **El mío se localiza en** que lo hace una sola persona, sin cámara y sin datos personales, con un campo propio para el dinero: qué paga hoy la persona y quién firma el gasto. Es la pregunta que el Blueprint me pide responder y que ninguna herramienta de usabilidad trae. *(Nota de honestidad: esta línea describe un método conocido y no una investigación nueva; no verifiqué una cifra de mercado.)*
+Lo mejor que existe en la Tierra para esto es NaviGate Prepared (EE. UU.): registro de simulacros, planos para primeros respondientes y planes de emergencia escolares; Capterra lo lista desde US$1,000 al año por usuario. El mío se localiza en que cobra por inmueble, no por usuario, en que los hallazgos de seguridad nunca se esconden detrás de un pago y en que el precio se muestra como hipótesis hasta que alguien real responda. Raptor y otros no publican precio (G2), lo que sugiere que el precio de este mercado se negocia, no se publica.
 
 ## 7. La visión a tres años (versión ligera)
-
-Si esta rebanada funciona, Croquis Vivo guarda para cada inmueble un historial de brechas encontradas, asignadas y confirmadas en simulacros reales. Los datos de uso reales se vuelven la calibración del modelo. El producto nunca será una certificación: es una ayuda para investigar, y las sesiones de observación son la forma en que se corrige cada versión.
+Si esta rebanada funciona, el producto pasa de simular dos croquis de ejemplo a cargar el plano real de un inmueble y a guardar el historial de todos sus simulacros, con un informe que dice qué cambió entre uno y otro. A tres años, es el registro vivo de simulacros de un edificio, con varios inmuebles por institución y con la confirmación de lo que predijo contra lo que pasó. Nunca será una certificación ni cobrará por ello.
 
 ## 8. Lo que NO construyo
-
-Cuentas con contraseña, grabación de pantalla o cámara, análisis automático de comentarios, panel de gráficas bonitas, envío de mensajes a las personas, datos de contacto de las personas observadas, cualquier cifra de "satisfacción". El ranking de dolor lo calcula la libreta con lo que yo anoto y no con una opinión de "me gustó".
+Pagos reales (no hay cobro, ni tarjetas, ni facturas), cuentas con correo o Google, ni cargar planos reales. No pongo formularios que pidan correo o teléfono. Tampoco prometo funciones que no existen: en /pricing cada función dice si ya existe o está por construir.
 
 ## 9. Arquitectura y stack
-
 | Capa | Qué | Por qué |
 |---|---|---|
-| App | Next.js 16, React 19, TypeScript | Mismo stack de la semana 12 |
-| Datos | Supabase nuevo (proyecto `croquisvivo`), inicio de sesión anónimo y RLS | Cada observador ve solo sus filas; sin datos personales |
-| Tablas | `casos` (semana 12), `eventos` (registro anónimo), `sesiones` (libreta del observador) | Eventos y sesiones separados |
-| Analítica | Registro propio de eventos, sin cookies de terceros ni scripts externos | Piso de seguridad: nada de datos personales |
-| Despliegue | Vercel, repo de GitHub, dominio propio como URL de registro | Regla del venture |
+| App | Next.js 16 (App Router), React 19, TypeScript | Es la misma base de la semana 13 |
+| Lógica de precios | `src/lib/precios/modelo.ts`, funciones puras con pruebas | Se prueba sin navegador |
+| Páginas | `/pricing` (planes y simulador), `/about` (memo 1:10) | Pedido del brief |
+| Escenarios y conversaciones | Tablas `escenarios` y `conversaciones_precio` en Supabase con RLS | Cada persona ve solo sus filas; no hay datos personales |
+| Respaldo | localStorage | Si la nube falla, el escenario no se pierde y la página lo dice |
+| Despliegue | Vercel, repo de GitHub, croquisvivo.xyz | Regla del venture |
 
 ## 10. Plan de pruebas
+- **Lógica:** pagantes, ingreso mensual y anual, margen, equilibrio y razón contra casos hechos a mano; entradas fuera de rango o con datos personales; escenarios sin costos dicen por medir.
+- **Recorrido (Playwright):** /pricing carga; muestra 2 segmentos y 3 planes; cada precio dice hipótesis; guardar un escenario y verlo; un valor inválido da error legible; /about trae el memo y no afirma un 1:10 medido.
+- **Seguridad:** sin secretos en el repo; RLS en las dos tablas; validación de largo y tipo; datos inventados y etiquetados.
+- **Persona sintética:** una persona que decide el gasto recorre /pricing y el simulador; se registra dónde se confunde y se arregla lo peor.
 
-- **Mecánica:** pruebas automáticas de los validadores (longitud de citas, rangos de tiempo, roles permitidos), recorrido de Playwright de iniciar sesión, usar la herramienta, atascarse, cerrar y exportar, y que sin Supabase funcione con el navegador. Debe encontrar al menos un error real y arreglarlo.
-- **Personas sintéticas (capa 1):** dos rondas más con Sofía y Héctor leyendo la página de sesiones y el botón de atasco.
-- **Capa 2, lo que me falta hacer yo:** cinco sesiones con personas reales (mínimo tres desconocidas), el peor problema corregido y redesplegado con evidencia de antes y después, y una persona que vuelva con prueba.
-- **Piso de seguridad:** sin llaves en el repo, RLS activa, entradas validadas, sin datos reales de personas.
-
-## 11. Condiciones del Blueprint de la semana 13 y cómo las cubre este ship
-
-| # | Condición | Qué hago |
+## 11. Condiciones del Blueprint de la semana 14 y cómo las cubre este ship
+| # | Condición | Cómo la cubro |
 |---|---|---|
-| 1 | Valor real para el usuario (5 reales, 3 desconocidas; tarea, confusión, errores, tiempo) | La libreta mide justo esos cuatro campos; la parte de conseguir a las personas es mía y no está hecha |
-| 3 | Caso económico creíble (quién decide la compra, costos actuales, evidencia de disposición a pagar; el 10:1 se mide) | Campos "qué paga hoy", "quién firma el gasto" y "cuánto tardó con su hoja de hoy"; el 10:1 queda **"por medir"** hasta tener datos |
-| 6 | Iteración con evidencia: registrar fallas, corregir lo mínimo, volver a probar, conservar los resultados negativos | Cada sesión se guarda aunque salga mal y no se borra; el ranking incluye los negativos |
-| Sombra | Nada simulado se presenta como verificado real | Se conserva: etiquetas y "confirmada" solo con simulacro real |
+| 1 | Reconstruir la tarea actual antes de mostrar precio; identificar comprador, dueño del presupuesto, unidad, costo completo y siguiente acción | El registro de conversaciones empieza por la tarea de hoy y quién firma; el simulador pide el costo actual del inmueble |
+| 2 | Rechazo, interés dicho, propuesta pedida y compromiso firmado o pagado, por separado | Cinco resultados distintos; solo compromiso firmado y pago cuentan como demanda |
+| 3 | Costos y beneficios comparables; el 10:1 es hipótesis hasta medirse | La razón sale solo con datos que la persona escribe y dice "con tus datos, no medida" |
+| 4 | Cláusula sombra: pagar no compra una respuesta engañosa ni un veredicto de seguridad | Los hallazgos siempre son gratis; no hay insignia de aprobado; todo dice SIMULADO |
+| 5 | Consentimiento, privacidad y portabilidad | Sin datos personales; exportar escenarios y conversaciones a CSV y JSON |
+| 6 | El precio debe cubrir el costo medido de entrega | El costo de entrega aparece como "sin medir"; no se afirma margen sin él |
 
 ## 12. Lo que falta y es mío
-
-Dominio propio; cinco personas reales; el arreglo del peor problema salido de sus palabras; una persona que vuelva con prueba; el video de demostración.
+Una conversación real de precio con alguien que podría pagar, y escribir lo que dice tal cual; no tengo ninguna todavía. También el costo real que paga hoy un inmueble por su programa y simulacros en México (no encontré una fuente pública con precios en pesos).
